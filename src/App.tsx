@@ -3,6 +3,8 @@ import { useRoutes } from "react-router-dom";
 import Welcome from "./pages/login/Wellcome";
 import OtpVerification from "./pages/login/OtpVerification";
 import OtpCode from "./pages/login/OtpCode";
+import { AuthProvider } from "./contexts/Auth";
+import Dashboard from "./pages/dashboard";
 
 
 function App() {
@@ -11,11 +13,14 @@ function App() {
     {path:'/',element: <Welcome/>},
     {path:'/otp',element: <OtpVerification/>},
     {path:'/otp_code',element: <OtpCode/>},
+    {path:'/dashboard',element: <Dashboard/>},
 
   ])
   return (
     <ChakraBaseProvider>
-      {routes}
+      <AuthProvider>
+          {routes}
+      </AuthProvider>
     </ChakraBaseProvider>
   );
 }
