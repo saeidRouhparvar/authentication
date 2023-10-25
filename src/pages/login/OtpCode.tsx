@@ -1,15 +1,31 @@
-import { Box, Flex, Input, useToast,Button } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Input,
+  useToast,
+  Button,
+  HStack,
+  PinInput,
+  PinInputField,
+  Center,
+} from "@chakra-ui/react";
 import { Ellipse_4, Ellipse_5, OTP } from "../../assets/Svg";
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../../contexts/Auth";
 
 const OtpCode = () => {
-  const [code, SetCode]:any = useState("    ");
+  const [code, SetCode]: any = useState("");
   const { state } = useLocation();
 
   const navigate = useNavigate();
-  
 
+  const {
+    user:{
+      loggedIn,
+    },
+    toggleAuth
+  } = useAuth()
   const onSubmit = () => {
     fetch("https://api-arshida.iran.liara.run/v1/auth/check-otp", {
       method: "POST",
@@ -32,27 +48,29 @@ const OtpCode = () => {
           toast({
             duration: 3000,
             status: "success",
-            title: "halidi da",
+            title: r.message,
             isClosable: false,
           });
+          
+          toggleAuth(true)
+          localStorage.setItem("accessToken",r.data.accessToken)
+          navigate("/dashboard")
         }
       });
   };
   const toast = useToast();
 
-  useEffect(()=>{
+  useEffect(() => {}, []);
 
-  },[])
- 
-   const replaceCharacter = (string:any, index:any, replacement:any) => {
+  const replaceCharacter = (string: any, index: any, replacement: any) => {
     return (
       string.slice(0, index) +
       replacement +
       string.slice(index + replacement.length)
     );
-  }
+  };
   console.log(code);
-  
+
   return (
     <Flex className="fade" direction={"column"} align={"center"}>
       <Box mt={"6.25rem"}>{OTP}</Box>
@@ -61,72 +79,44 @@ const OtpCode = () => {
       </Box>
       <Flex gap={2} color={"#3A3A3A"} mt={"1.5rem"}>
         <Box>Enter the OTP sent to</Box>
-        <Box fontWeight={700}>+234 706 067 2335</Box>
+        <Box fontWeight={700}>{state?.field}</Box>
       </Flex>
-
-      <Flex px={"3.375rem"} gap={"1.5rem"} mt={"3.25rem"}>
-        <Flex fontSize={"1.5rem"} borderBottom={"1px solid #2743FD"}>
-          <Input
-            outline={"none"}
-            type="number"
-            bg={"#FFF"}
-            w={"100%"}
-            textAlign={"center"}
-            maxLength={1}
-            onChange={(e)=>{
-              let _code:any = code
-              _code = replaceCharacter(_code,0,e.target.value[0])
-            
-              SetCode(_code)
-            }}
-          />
-        </Flex>
-        <Flex fontSize={"1.5rem"} borderBottom={"1px solid #2743FD"}>
-          <Input
-            outline={"none"}
-            type="number"
-            bg={"#FFF"}
-            w={"100%"}
-            textAlign={"center"}
-            maxLength={1}
-            onChange={(e)=>{
-           
-              let _code:any = code
-              _code = replaceCharacter(_code,1,e.target.value[0])
-              SetCode(_code)
-            }}
-          />
-        </Flex>
-        <Flex fontSize={"1.5rem"} borderBottom={"1px solid #2743FD"}>
-          <Input
-            outline={"none"}
-            type="number"
-            bg={"#FFF"}
-            w={"100%"}
-            textAlign={"center"}
-            maxLength={1}
-            onChange={(e)=>{
-              let _code:any = code
-              _code = replaceCharacter(_code,2,e.target.value[0])
-              SetCode(_code)
-            }}
-          />
-        </Flex>
-        <Flex fontSize={"1.5rem"} borderBottom={"1px solid #2743FD"}>
-          <Input
-            outline={"none"}
-            type="number"
-            bg={"#FFF"}
-            w={"100%"}
-            textAlign={"center"}
-            maxLength={1}
-            onChange={(e)=>{
-              let _code:any = code
-              _code = replaceCharacter(_code,3,e.target.value[0])
-              SetCode(_code)
-            }}
-          />
-        </Flex>
+      <Flex
+        width={"full"}
+        alignItems={"center"}
+        mt={"3.25rem"}
+        justifyContent={"center"}
+        pt={3}
+        gap={"1.5rem"}
+        px="3.375rem"
+        sx={{
+          "&": {
+            input: {
+              width: "50px",
+              flex: 1,
+              borderBottom: "1px solid #2743FD",
+              textAlign: "Center",
+              fontSize: "20px",
+              outline: "none",
+            },
+          },
+        }}
+      >
+        <PinInput
+          otp
+          size={"100%"}
+          placeholder=""
+          onChange={(e: any) => {
+            SetCode(e);
+          }}
+        >
+          <PinInputField />
+          <PinInputField />
+          <PinInputField />
+          <PinInputField />
+          <PinInputField />
+          <PinInputField />
+        </PinInput>
       </Flex>
 
       <Flex gap={3} mt={"3.75rem"} align={"center"}>
@@ -138,7 +128,7 @@ const OtpCode = () => {
         </Box>
       </Flex>
       <Box px={"30px"} w={"full"}>
-      <Button
+        <Button
           overflow={"hidden"}
           textAlign={"center"}
           mt={"5.375rem"}
